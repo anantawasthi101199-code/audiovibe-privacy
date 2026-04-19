@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alpha Tech Labs — Building the Future of Audio</title>
+  <meta name="description" content="Alpha Tech Labs is a UK-based technology company building next-generation audio-first social experiences. Our first product is AudioVibe." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan: #06b6d4;
+      --cyan-light: #22d3ee;
+      --purple: #a855f7;
+      --purple-dark: #9333ea;
+      --bg-darkest: #0a0a0a;
+      --bg-dark: #121212;
+      --bg-card: #1a1a1a;
+      --bg-elevated: #242424;
+      --border: #27272a;
+      --border-light: #3f3f46;
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-darkest);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-darkest); }
+    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+    /* ── Background orbs ── */
+    .bg-orbs {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.12;
+      animation: float 20s infinite ease-in-out;
+    }
+    .orb-1 { width: 600px; height: 600px; background: var(--cyan); top: -200px; left: -200px; animation-delay: 0s; }
+    .orb-2 { width: 500px; height: 500px; background: var(--purple); bottom: -150px; right: -150px; animation-delay: -8s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--cyan); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -4s; opacity: 0.06; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 68px;
+      background: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px; text-decoration: none;
+    }
+    .nav-waveform {
+      display: flex; align-items: center; gap: 3px; height: 28px;
+    }
+    .nav-bar {
+      width: 4px; border-radius: 99px;
+      background: linear-gradient(to top, var(--cyan), var(--purple));
+      animation: wave 1.4s ease-in-out infinite;
+    }
+    .nav-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
+    .nav-bar:nth-child(2) { height: 70%; animation-delay: 0.1s; }
+    .nav-bar:nth-child(3) { height: 100%; animation-delay: 0.2s; }
+    .nav-bar:nth-child(4) { height: 60%; animation-delay: 0.3s; }
+    .nav-bar:nth-child(5) { height: 45%; animation-delay: 0.4s; }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(0.4); }
+    }
+
+    .nav-brand-text {
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.05em;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 32px; list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-cta {
+      padding: 8px 20px; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #fff; text-decoration: none; transition: opacity 0.2s, transform 0.2s;
+      box-shadow: 0 0 20px rgba(6,182,212,0.3);
+    }
+    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { width: 22px; height: 2px; background: var(--text-secondary); border-radius: 2px; transition: 0.3s; }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 100px 5% 60px;
+    }
+    .hero-content { max-width: 800px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 99px;
+      border: 1px solid rgba(6,182,212,0.3);
+      background: rgba(6,182,212,0.08);
+      font-size: 0.8rem; font-weight: 600; color: var(--cyan);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--cyan);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900; line-height: 1.1; letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.2rem); color: var(--text-secondary);
+      max-width: 560px; margin: 0 auto 40px; line-height: 1.7;
+    }
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 14px 32px; border-radius: 10px; font-size: 1rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: #fff; text-decoration: none; transition: all 0.2s;
+      box-shadow: 0 0 30px rgba(6,182,212,0.4);
+      border: none; cursor: pointer;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(168,85,247,0.5); }
+    .btn-secondary {
+      padding: 14px 32px; border-radius: 10px; font-size: 1rem; font-weight: 600;
+      background: transparent; color: var(--text-primary);
+      border: 1px solid var(--border-light); text-decoration: none; transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
+
+    /* ── Section base ── */
+    section { position: relative; z-index: 1; padding: 100px 5%; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--cyan); margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 16px;
+    }
+    .section-subtitle {
+      font-size: 1.05rem; color: var(--text-secondary); max-width: 560px; line-height: 1.7;
+    }
+    .divider {
+      width: 48px; height: 3px; border-radius: 2px;
+      background: linear-gradient(to right, var(--cyan), var(--purple));
+      margin: 20px 0;
+    }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 0;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: rgba(26,26,26,0.5);
+    }
+    .stat-item {
+      flex: 1; min-width: 150px; text-align: center;
+      padding: 36px 24px; border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-size: 2rem; font-weight: 900; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+      align-items: center; max-width: 1100px; margin: 0 auto;
+    }
+    .about-visual {
+      position: relative; display: flex; align-items: center; justify-content: center;
+      min-height: 360px;
+    }
+    .about-card-main {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px; width: 100%; max-width: 380px;
+      position: relative; overflow: hidden;
+    }
+    .about-card-main::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--cyan), var(--purple));
+    }
+    .card-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(168,85,247,0.2));
+      border: 1px solid rgba(6,182,212,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 20px;
+    }
+    .about-card-main h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .about-card-main p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+    .floating-chip {
+      position: absolute;
+      background: var(--bg-elevated); border: 1px solid var(--border-light);
+      border-radius: 10px; padding: 10px 16px;
+      font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .chip-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .chip-1 { top: 20px; right: -20px; animation: chipFloat 4s ease-in-out infinite; }
+    .chip-2 { bottom: 40px; left: -30px; animation: chipFloat 4s ease-in-out infinite 1.5s; }
+    @keyframes chipFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .values-list { list-style: none; margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+    .values-list li {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px; border-radius: 12px;
+      border: 1px solid var(--border); background: rgba(26,26,26,0.4);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .values-list li:hover { border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05); }
+    .value-icon {
+      width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(168,85,247,0.15));
+      border: 1px solid rgba(6,182,212,0.2);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .value-text strong { display: block; font-size: 0.9rem; margin-bottom: 2px; }
+    .value-text span { font-size: 0.82rem; color: var(--text-secondary); }
+
+    /* ── Product ── */
+    #product { background: rgba(26,26,26,0.3); }
+    .product-header { text-align: center; margin-bottom: 64px; }
+    .product-header .section-subtitle { margin: 0 auto; }
+    .product-hero-card {
+      max-width: 1000px; margin: 0 auto;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 0 80px rgba(6,182,212,0.08), 0 0 80px rgba(168,85,247,0.06);
+    }
+    .product-card-top {
+      background: linear-gradient(135deg, #0d1a1f 0%, #150d2a 100%);
+      padding: 48px; display: flex; align-items: center; justify-content: center; gap: 32px;
+      flex-wrap: wrap; border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .product-card-top::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(6,182,212,0.1) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 50%, rgba(168,85,247,0.1) 0%, transparent 60%);
+    }
+    .app-logo {
+      position: relative; display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    .app-waveform {
+      display: flex; align-items: center; gap: 5px; height: 64px;
+    }
+    .app-bar {
+      width: 8px; border-radius: 99px;
+      background: linear-gradient(to top, var(--cyan), var(--purple));
+      animation: wave 1.4s ease-in-out infinite;
+    }
+    .app-bar:nth-child(1) { height: 35%; animation-delay: 0s; }
+    .app-bar:nth-child(2) { height: 65%; animation-delay: 0.12s; }
+    .app-bar:nth-child(3) { height: 100%; animation-delay: 0.24s; }
+    .app-bar:nth-child(4) { height: 70%; animation-delay: 0.36s; }
+    .app-bar:nth-child(5) { height: 45%; animation-delay: 0.48s; }
+    .app-logo-text {
+      font-size: 2.2rem; font-weight: 900; letter-spacing: 0.02em;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .app-tagline {
+      font-size: 1rem; color: var(--text-secondary); max-width: 340px; text-align: center; line-height: 1.6;
+    }
+    .product-card-bottom {
+      padding: 40px 48px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;
+    }
+    .feature-item { display: flex; gap: 14px; align-items: flex-start; }
+    .feature-icon {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(168,85,247,0.15));
+      border: 1px solid rgba(6,182,212,0.2);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .feature-text strong { font-size: 0.9rem; display: block; margin-bottom: 3px; }
+    .feature-text span { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+
+    .platform-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 10px;
+      background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2);
+      font-size: 0.85rem; font-weight: 600; color: var(--cyan);
+      margin-top: 32px; text-decoration: none; transition: all 0.2s;
+    }
+    .platform-badge:hover { background: rgba(6,182,212,0.15); transform: translateY(-2px); }
+
+    /* ── Team ── */
+    .team-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px; max-width: 900px; margin: 48px auto 0;
+    }
+    .team-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px; transition: all 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .team-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--cyan), var(--purple));
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .team-card:hover { border-color: rgba(6,182,212,0.3); transform: translateY(-4px); }
+    .team-card:hover::before { opacity: 1; }
+    .team-avatar {
+      width: 56px; height: 56px; border-radius: 14px; margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 800; color: #fff;
+    }
+    .team-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .team-role {
+      font-size: 0.8rem; font-weight: 600; color: var(--cyan); margin-bottom: 12px;
+    }
+    .team-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── Contact ── */
+    #contact { text-align: center; }
+    .contact-card {
+      max-width: 640px; margin: 48px auto 0;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 48px;
+      position: relative; overflow: hidden;
+    }
+    .contact-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--cyan), var(--purple));
+    }
+    .contact-methods { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    .contact-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 16px 20px; border-radius: 12px;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.02);
+      flex-wrap: wrap; gap: 8px;
+    }
+    .contact-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; min-width: 80px; }
+    .contact-value { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+    .contact-value a { color: var(--cyan); text-decoration: none; }
+    .contact-value a:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 40px 5%;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+      background: rgba(10,10,10,0.8);
+    }
+    .footer-left { display: flex; flex-direction: column; gap: 8px; }
+    .footer-brand {
+      font-size: 0.9rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .footer-copy { font-size: 0.8rem; color: var(--text-muted); }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+    .footer-links a { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--cyan); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-visual { min-height: 280px; }
+      .chip-1, .chip-2 { display: none; }
+      .product-card-bottom { padding: 24px; }
+      .contact-card { padding: 28px; }
+      footer { flex-direction: column; align-items: flex-start; }
+      .stat-item { min-width: 120px; padding: 24px 16px; }
+    }
+
+    /* ── Utility ── */
+    .container { max-width: 1100px; margin: 0 auto; }
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-8 { margin-top: 32px; }
+
+    /* ── Glow line separator ── */
+    .glow-line {
+      height: 1px; max-width: 200px; margin: 0 auto;
+      background: linear-gradient(to right, transparent, var(--cyan), var(--purple), transparent);
+      opacity: 0.5;
+    }
+
+    /* ── Registered badge ── */
+    .registered-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 6px;
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
+      font-size: 0.75rem; font-weight: 600; color: #10b981;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Background orbs -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-waveform">
+      <div class="nav-bar"></div>
+      <div class="nav-bar"></div>
+      <div class="nav-bar"></div>
+      <div class="nav-bar"></div>
+      <div class="nav-bar"></div>
+    </div>
+    <span class="nav-brand-text">Alpha Tech Labs</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#product">AudioVibe</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="privacy.html">Privacy Policy</a></li>
+    <li><a href="#product" class="nav-cta">Get AudioVibe</a></li>
+  </ul>
+  <div class="hamburger" onclick="this.classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      UK Registered Technology Company
+    </div>
+    <h1>
+      Building the<br/>
+      <span class="gradient-text">Future of Audio</span>
+    </h1>
+    <p>
+      Alpha Tech Labs creates audio-first digital experiences that bring people closer through the power of sound. Based in the United Kingdom, we build products that matter.
+    </p>
+    <div class="hero-buttons">
+      <a href="#product" class="btn-primary">Explore AudioVibe</a>
+      <a href="#about" class="btn-secondary">About Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats ── -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-number">2026</div>
+    <div class="stat-label">Founded</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">UK</div>
+    <div class="stat-label">Registered</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">1</div>
+    <div class="stat-label">Live Product</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">Android</div>
+    <div class="stat-label">Platform</div>
+  </div>
+</div>
+
+<!-- ── About ── -->
+<section id="about">
+  <div class="about-grid">
+    <div>
+      <p class="section-label">Who We Are</p>
+      <h2 class="section-title">Technology built with <span class="gradient-text">purpose</span></h2>
+      <div class="divider"></div>
+      <p class="section-subtitle">
+        Alpha Tech Labs Ltd is a UK-registered technology company focused on building innovative mobile and web applications. We believe in creating products that are fast, secure, and genuinely useful.
+      </p>
+      <div class="registered-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Registered in England &amp; Wales
+      </div>
+      <ul class="values-list" style="margin-top:32px">
+        <li>
+          <div class="value-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="value-text">
+            <strong>Security First</strong>
+            <span>Every product is built with security and user privacy at the core, not as an afterthought.</span>
+          </div>
+        </li>
+        <li>
+          <div class="value-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="value-text">
+            <strong>Move Fast, Ship Right</strong>
+            <span>We iterate quickly without compromising on code quality, performance, or reliability.</span>
+          </div>
+        </li>
+        <li>
+          <div class="value-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="value-text">
+            <strong>Community Driven</strong>
+            <span>We build with our users, not just for them. Real feedback drives every product decision.</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="about-visual">
+      <div class="about-card-main">
+        <div class="card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Alpha Tech Labs Ltd</h3>
+        <p>A forward-thinking technology company building the next generation of audio-social experiences. Our first product, AudioVibe, is live and available on Android.</p>
+        <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+            <span style="color:var(--text-muted)">Incorporated</span>
+            <span style="color:var(--text-secondary); font-weight:600">February 2026</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+            <span style="color:var(--text-muted)">Jurisdiction</span>
+            <span style="color:var(--text-secondary); font-weight:600">England &amp; Wales</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+            <span style="color:var(--text-muted)">Sector</span>
+            <span style="color:var(--text-secondary); font-weight:600">Mobile Technology</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+            <span style="color:var(--text-muted)">Products</span>
+            <span style="font-weight:600; background:linear-gradient(135deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">AudioVibe</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="floating-chip chip-1">
+        <div class="chip-dot" style="background:var(--cyan)"></div>
+        Live on Android
+      </div>
+      <div class="floating-chip chip-2">
+        <div class="chip-dot" style="background:#10b981"></div>
+        UK Registered
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ── Product ── -->
+<section id="product">
+  <div class="product-header">
+    <p class="section-label">Our Product</p>
+    <h2 class="section-title">Introducing <span class="gradient-text">AudioVibe</span></h2>
+    <div class="divider" style="margin:16px auto"></div>
+    <p class="section-subtitle">
+      An audio-first social platform where people share, discover, and connect through the power of sound. Upload audio, grow a following, and explore what the world sounds like.
+    </p>
+  </div>
+
+  <div class="product-hero-card">
+    <div class="product-card-top">
+      <div class="app-logo">
+        <div class="app-waveform">
+          <div class="app-bar"></div>
+          <div class="app-bar"></div>
+          <div class="app-bar"></div>
+          <div class="app-bar"></div>
+          <div class="app-bar"></div>
+        </div>
+        <div class="app-logo-text">AudioVibe</div>
+      </div>
+      <div class="app-tagline">
+        Share your voice. Discover new sounds. Connect with creators around the world.
+      </div>
+    </div>
+
+    <div class="product-card-bottom">
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Audio Uploads</strong>
+          <span>Record or upload any audio. Share it with your followers instantly.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Social Feed</strong>
+          <span>Follow creators, like and comment on audio posts, build your community.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Discovery</strong>
+          <span>Trending feed surfaces the best audio content across all categories.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Real-time Messaging</strong>
+          <span>Direct messages and live notifications keep your community connected.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Creator Profiles</strong>
+          <span>Showcase your audio portfolio with a fully customisable creator profile.</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Secure by Design</strong>
+          <span>End-to-end rate limiting, JWT auth, and certificate pinning built in from day one.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-8">
+    <span class="platform-badge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      Available on Android — Coming soon to iOS
+    </span>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ── Team ── -->
+<section id="team">
+  <div class="text-center">
+    <p class="section-label">The Team</p>
+    <h2 class="section-title">Built by people who <span class="gradient-text">care deeply</span></h2>
+    <div class="divider" style="margin:16px auto"></div>
+    <p class="section-subtitle" style="margin:0 auto">
+      Alpha Tech Labs is a lean, focused team building products with conviction. Every line of code is written with users in mind.
+    </p>
+  </div>
+
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar">A</div>
+      <h3>Founder &amp; Director</h3>
+      <div class="team-role">Alpha Tech Labs Ltd</div>
+      <p>Leading product vision, engineering, and strategy. Responsible for building AudioVibe from the ground up — from architecture to deployment.</p>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar" style="background:linear-gradient(135deg,var(--purple),#ec4899)">AT</div>
+      <h3>Alpha Tech Labs</h3>
+      <div class="team-role">Company · Est. February 2026</div>
+      <p>A UK-registered technology company focused on mobile and audio innovation. Incorporated in England &amp; Wales with a mission to build products that connect people through sound.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Contact ── -->
+<section id="contact">
+  <p class="section-label">Get in Touch</p>
+  <h2 class="section-title">We'd love to <span class="gradient-text">hear from you</span></h2>
+  <div class="divider" style="margin:16px auto"></div>
+
+  <div class="contact-card">
+    <p style="color:var(--text-secondary); font-size:0.95rem; line-height:1.7;">
+      Whether you're a user with feedback, a business looking to partner, or a developer interested in joining — reach out. We respond to every message.
+    </p>
+    <div class="contact-methods">
+      <div class="contact-row">
+        <span class="contact-label">Email</span>
+        <span class="contact-value"><a href="mailto:alphatechlabs1011@gmail.com">alphatechlabs1011@gmail.com</a></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">Company</span>
+        <span class="contact-value">Alpha Tech Labs Ltd</span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">Jurisdiction</span>
+        <span class="contact-value">England &amp; Wales, United Kingdom</span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">Product</span>
+        <span class="contact-value" style="background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">AudioVibe</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-brand">Alpha Tech Labs Ltd</div>
+    <div class="footer-copy">© 2026 Alpha Tech Labs Ltd. Registered in England &amp; Wales. All rights reserved.</div>
+  </div>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#product">AudioVibe</a>
+    <a href="#contact">Contact</a>
+    <a href="privacy.html">Privacy Policy</a>
+  </div>
+</footer>
+
+</body>
+</html>
